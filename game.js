@@ -207,6 +207,27 @@ function getFreeDirs(tank, blockedList = []) {
   });
 }
 
+function tryRelocateEnemy(enemy) {
+  const offsets = [
+    [0, 2], [0, 3], [1, 2], [-1, 2], [2, 1], [-2, 1], [2, 0], [-2, 0],
+    [0, -2], [1, -2], [-1, -2], [3, 0], [-3, 0], [0, 4],
+  ];
+
+  for (const [ox, oy] of offsets) {
+    const nx = enemy.x + ox * TILE;
+    const ny = enemy.y + oy * TILE;
+    const blockers = [player, ...enemies.filter(e => e !== enemy)];
+    if (canPlaceTankAt(nx, ny, blockers)) {
+      enemy.x = nx;
+      enemy.y = ny;
+      enemy.dir = 'down';
+      enemy.stuckTime = 0;
+      return true;
+    }
+  }
+  return false;
+}
+
 function spawnPlayer() {
   player = {
     x: 12.5 * TILE,
@@ -228,7 +249,10 @@ function spawnEnemy() {
     { x: 23.5 * TILE, y: 2.5 * TILE },
   ];
 
-  const candidates = spawns.filter(pos => canPlaceTankAt(pos.x, pos.y, [player, ...enemies]));
+  const candidates = spawns.filter(pos => {
+    if (!canPlaceTankAt(pos.x, pos.y, [player, ...enemies])) return false;
+    return !enemies.some(e => e.alive && Math.hypot(e.x - pos.x, e.y - pos.y) < 34);
+  });
   if (!candidates.length) return;
 
   const pos = candidates[Math.floor(Math.random() * candidates.length)];
@@ -239,6 +263,7 @@ function spawnEnemy() {
     speed: settings.enemySpeed,
     cooldown: 0.6 + Math.random() * 0.6,
     turnTimer: 0.8 + Math.random() * 1.2,
+    stuckTime: 0,
     alive: true,
   });
   enemiesSpawned += 1;
@@ -385,6 +410,7 @@ function updateEnemies(dt) {
 
     const moved = moveTank(enemy, dt, [player, ...enemies]);
     if (!moved) {
+      enemy.stuckTime = (enemy.stuckTime || 0) + dt;
       const freeDirs = getFreeDirs(enemy, [player, ...enemies]);
       if (freeDirs.length) {
         enemy.dir = freeDirs[Math.floor(Math.random() * freeDirs.length)];
@@ -392,6 +418,12 @@ function updateEnemies(dt) {
         enemy.dir = 'down';
       }
       enemy.turnTimer = 0.25;
+
+      if (enemy.stuckTime > 0.8) {
+        tryRelocateEnemy(enemy);
+      }
+    } else {
+      enemy.stuckTime = 0;
     }
 
     if (enemy.cooldown <= 0) {
