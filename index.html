@@ -4,20 +4,40 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>坦克大战 Battle City</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
   <main class="app">
-    <h1>🛡️ 坦克大战</h1>
+    <header class="topbar">
+      <h1>🛡️ TANK BATTLE</h1>
+      <p>经典街机复刻 · 防守基地 · 火力全开</p>
+      <button id="restart">重新开始</button>
+    </header>
 
     <section class="hud">
-      <div>分数：<strong id="score">0</strong></div>
-      <div>生命：<strong id="lives">3</strong></div>
-      <div>关卡：<strong id="level">1</strong></div>
-      <button id="restart">重新开始</button>
+      <article class="stat-card">
+        <span>分数</span>
+        <strong id="score">0</strong>
+      </article>
+      <article class="stat-card">
+        <span>生命</span>
+        <strong id="lives">3</strong>
+      </article>
+      <article class="stat-card">
+        <span>关卡</span>
+        <strong id="level">1</strong>
+      </article>
     </section>
 
     <section class="settings" aria-label="游戏设置">
+      <h2>战场参数</h2>
+
       <label for="difficulty">难度</label>
       <select id="difficulty">
         <option value="easy">简单</option>
@@ -25,26 +45,31 @@
         <option value="hard">困难</option>
         <option value="custom">自定义</option>
       </select>
+      <strong class="value">预设</strong>
 
       <label for="enemyCount">敌方总数</label>
       <input id="enemyCount" type="range" min="6" max="30" step="1" value="12" />
-      <strong id="enemyCountValue">12</strong>
+      <strong class="value" id="enemyCountValue">12</strong>
 
       <label for="enemySpeed">敌方速度</label>
       <input id="enemySpeed" type="range" min="40" max="120" step="5" value="70" />
-      <strong id="enemySpeedValue">70</strong>
+      <strong class="value" id="enemySpeedValue">70</strong>
 
       <label for="spawnRate">刷怪间隔(ms)</label>
       <input id="spawnRate" type="range" min="500" max="2000" step="100" value="1100" />
-      <strong id="spawnRateValue">1100</strong>
+      <strong class="value" id="spawnRateValue">1100</strong>
 
       <label for="bulletSpeed">子弹速度</label>
       <input id="bulletSpeed" type="range" min="180" max="360" step="10" value="250" />
-      <strong id="bulletSpeedValue">250</strong>
+      <strong class="value" id="bulletSpeedValue">250</strong>
     </section>
 
-    <canvas id="game" width="624" height="624" aria-label="tank battle game"></canvas>
-    <p class="tip">WASD/方向键移动，J 或 空格射击。守住底部基地（鹰）！</p>
+    <section class="screen-wrap">
+      <canvas id="game" width="624" height="624" aria-label="tank battle game"></canvas>
+      <div class="scanline" aria-hidden="true"></div>
+    </section>
+
+    <p class="tip">WASD / 方向键移动，J 或空格射击。目标：守住基地（鹰）并歼灭全部敌军。</p>
   </main>
 
   <script src="game.js"></script>
