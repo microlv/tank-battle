@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>坦克大战 Battle City</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <h1>🛡️ 坦克大战</h1>
+
+    <section class="hud">
+      <div>分数：<strong id="score">0</strong></div>
+      <div>生命：<strong id="lives">3</strong></div>
+      <div>关卡：<strong id="level">1</strong></div>
+      <button id="restart">重新开始</button>
+    </section>
+
+    <section class="settings" aria-label="游戏设置">
+      <label for="difficulty">难度</label>
+      <select id="difficulty">
+        <option value="easy">简单</option>
+        <option value="normal" selected>普通</option>
+        <option value="hard">困难</option>
+        <option value="custom">自定义</option>
+      </select>
+
+      <label for="enemyCount">敌方总数</label>
+      <input id="enemyCount" type="range" min="6" max="30" step="1" value="12" />
+      <strong id="enemyCountValue">12</strong>
+
+      <label for="enemySpeed">敌方速度</label>
+      <input id="enemySpeed" type="range" min="40" max="120" step="5" value="70" />
+      <strong id="enemySpeedValue">70</strong>
+
+      <label for="spawnRate">刷怪间隔(ms)</label>
+      <input id="spawnRate" type="range" min="500" max="2000" step="100" value="1100" />
+      <strong id="spawnRateValue">1100</strong>
+
+      <label for="bulletSpeed">子弹速度</label>
+      <input id="bulletSpeed" type="range" min="180" max="360" step="10" value="250" />
+      <strong id="bulletSpeedValue">250</strong>
+    </section>
+
+    <canvas id="game" width="624" height="624" aria-label="tank battle game"></canvas>
+    <p class="tip">WASD/方向键移动，J 或 空格射击。守住底部基地（鹰）！</p>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
