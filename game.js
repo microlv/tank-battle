@@ -178,6 +178,35 @@ function tankCollideOther(t, list) {
   });
 }
 
+function canPlaceTankAt(x, y, blockedList = []) {
+  const probe = { x, y };
+  const rect = tankRect(probe);
+  if (
+    rect.x < TILE || rect.y < TILE ||
+    rect.x + rect.w > WORLD - TILE ||
+    rect.y + rect.h > WORLD - TILE ||
+    overlapsSolid(rect)
+  ) {
+    return false;
+  }
+  return !tankCollideOther({ ...probe, alive: true }, blockedList);
+}
+
+function getFreeDirs(tank, blockedList = []) {
+  return ['up', 'down', 'left', 'right'].filter(dir => {
+    const d = DIRS[dir];
+    const probe = { ...tank, x: tank.x + d.x * 6, y: tank.y + d.y * 6 };
+    const rect = tankRect(probe);
+    if (
+      rect.x < TILE || rect.y < TILE ||
+      rect.x + rect.w > WORLD - TILE ||
+      rect.y + rect.h > WORLD - TILE ||
+      overlapsSolid(rect)
+    ) return false;
+    return !tankCollideOther(probe, blockedList);
+  });
+}
+
 function spawnPlayer() {
   player = {
     x: 12.5 * TILE,
@@ -192,17 +221,21 @@ function spawnPlayer() {
 
 function spawnEnemy() {
   if (enemiesSpawned >= settings.enemyCount) return;
+
   const spawns = [
-    { x: 1.5 * TILE, y: 1.5 * TILE },
-    { x: 12.5 * TILE, y: 1.5 * TILE },
-    { x: 24.5 * TILE, y: 1.5 * TILE },
+    { x: 2.5 * TILE, y: 2.5 * TILE },
+    { x: 12.5 * TILE, y: 2.5 * TILE },
+    { x: 23.5 * TILE, y: 2.5 * TILE },
   ];
 
-  const pos = spawns[Math.floor(Math.random() * spawns.length)];
+  const candidates = spawns.filter(pos => canPlaceTankAt(pos.x, pos.y, [player, ...enemies]));
+  if (!candidates.length) return;
+
+  const pos = candidates[Math.floor(Math.random() * candidates.length)];
   enemies.push({
     x: pos.x,
     y: pos.y,
-    dir: ['down', 'left', 'right'][Math.floor(Math.random() * 3)],
+    dir: 'down',
     speed: settings.enemySpeed,
     cooldown: 0.6 + Math.random() * 0.6,
     turnTimer: 0.8 + Math.random() * 1.2,
@@ -352,8 +385,13 @@ function updateEnemies(dt) {
 
     const moved = moveTank(enemy, dt, [player, ...enemies]);
     if (!moved) {
-      const options = ['up', 'down', 'left', 'right'].filter(d => d !== enemy.dir);
-      enemy.dir = options[Math.floor(Math.random() * options.length)];
+      const freeDirs = getFreeDirs(enemy, [player, ...enemies]);
+      if (freeDirs.length) {
+        enemy.dir = freeDirs[Math.floor(Math.random() * freeDirs.length)];
+      } else {
+        enemy.dir = 'down';
+      }
+      enemy.turnTimer = 0.25;
     }
 
     if (enemy.cooldown <= 0) {
