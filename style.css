@@ -57,9 +57,15 @@ body {
 .topbar {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 6px 16px;
+  gap: 10px 16px;
   align-items: center;
   margin-bottom: 12px;
+}
+
+.title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 h1 {
@@ -69,12 +75,24 @@ h1 {
   font-size: clamp(1.2rem, 2.2vw, 1.8rem);
   color: #f4f7ff;
   text-shadow: 0 0 18px rgba(255, 159, 28, 0.38);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.version {
+  font-size: 0.52em;
+  color: #ffd6a0;
+  background: rgba(255, 159, 28, 0.18);
+  border: 1px solid rgba(255, 159, 28, 0.45);
+  border-radius: 999px;
+  padding: 3px 8px;
+  letter-spacing: 0.04em;
 }
 
 .topbar p {
   margin: 0;
   color: var(--muted);
-  grid-column: 1 / 2;
 }
 
 button {
@@ -89,6 +107,7 @@ button {
   background: linear-gradient(135deg, #ffd166, var(--accent));
   box-shadow: 0 8px 20px rgba(255, 159, 28, 0.25);
   transition: transform .18s ease, filter .18s ease;
+  justify-self: end;
 }
 button:hover { transform: translateY(-1px); filter: saturate(1.15); }
 button:active { transform: translateY(1px) scale(0.99); }
@@ -207,8 +226,8 @@ canvas {
 
 @media (max-width: 760px) {
   .topbar { grid-template-columns: 1fr; }
-  .topbar p { grid-column: auto; }
-  button { width: 100%; }
+  button { width: 100%; justify-self: stretch; }
+  h1 { flex-wrap: wrap; }
   .hud { grid-template-columns: 1fr; }
   .settings {
     grid-template-columns: 1fr;
